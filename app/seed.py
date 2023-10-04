@@ -1,27 +1,67 @@
-from models import db, User, Order, Donation
+# Importing necessary modules
+from models import db, Fruit, Power, FruitPower
+from random import choice
+from app import create_app
+from datetime import datetime
 
-# Create a few sample users
-user1 = User(username='user1', email='user1@example.com')
-user2 = User(username='user2', email='user2@example.com')
+# Create the Flask app
+app = create_app()
 
-# Add users to the session
-db.session.add_all([user1, user2])
-db.session.commit()
+# Use the app context to interact with the database
+with app.app_context():
+    # Step 1: Check if tables exist, if not, create them
+    db.create_all()
 
-# Create sample orders for users
-order1 = Order(user_id=user1.id, total_amount=50.0)
-order2 = Order(user_id=user2.id, total_amount=30.0)
+    # Step 2: Seeding powers
+    print("🍏 Seeding fruits and vitamins...")
+    powers_data = [
+        {"name": "Vitamin A", "description": "Essential for vision and immune function", "created_at": datetime.utcnow(), "updated_at": datetime.utcnow()},
+        {"name": "Vitamin C", "description": "Boosts the immune system and aids in iron absorption", "created_at": datetime.utcnow(), "updated_at": datetime.utcnow()},
+        {"name": "Vitamin E", "description": "Acts as an antioxidant and supports skin health", "created_at": datetime.utcnow(), "updated_at": datetime.utcnow()},
+        {"name": "Fiber", "description": "Important for digestive health", "created_at": datetime.utcnow(), "updated_at": datetime.utcnow()}
+    ]
 
-# Add orders to the session
-db.session.add_all([order1, order2])
-db.session.commit()
+    for data in powers_data:
+        power = Power(**data)
+        db.session.add(power)
 
-# Create sample donations for users
-donation1 = Donation(user_id=user1.id, amount=20.0)
-donation2 = Donation(user_id=user2.id, amount=10.0)
+    db.session.commit()
 
-# Add donations to the session
-db.session.add_all([donation1, donation2])
-db.session.commit()
+    # Step 3: Seeding fruits
+    print("🍏 Seeding fruits...")
+    fruits_data = [
+        {"name": "Apple", "super_name": "Vitamin A Bomb", "created_at": datetime.utcnow(), "updated_at": datetime.utcnow()},
+        {"name": "Orange", "super_name": "Citrus Savior", "created_at": datetime.utcnow(), "updated_at": datetime.utcnow()},
+        {"name": "Banana", "super_name": "Energy Booster", "created_at": datetime.utcnow(), "updated_at": datetime.utcnow()},
+        {"name": "Berries", "super_name": "Antioxidant King", "created_at": datetime.utcnow(), "updated_at": datetime.utcnow()},
+        {"name": "Kiwi", "super_name": "Vitamin C Wonder", "created_at": datetime.utcnow(), "updated_at": datetime.utcnow()},
+        {"name": "Pineapple", "super_name": "Digestive Hero", "created_at": datetime.utcnow(), "updated_at": datetime.utcnow()},
+        {"name": "Grapes", "super_name": "Fiber Defender", "created_at": datetime.utcnow(), "updated_at": datetime.utcnow()},
+        {"name": "Mango", "super_name": "Vitamin E Delight", "created_at": datetime.utcnow(), "updated_at": datetime.utcnow()},
+        {"name": "Papaya", "super_name": "Vitamin Rich Wonder", "created_at": datetime.utcnow(), "updated_at": datetime.utcnow()},
+        {"name": "Watermelon", "super_name": "Hydration Guardian", "created_at": datetime.utcnow(), "updated_at": datetime.utcnow()}
+    ]
 
-print("Sample data added to the database.")
+    for data in fruits_data:
+        fruit = Fruit(**data)
+        db.session.add(fruit)
+
+    db.session.commit()
+
+    # Step 4: Adding powers to fruits
+    print("🍏 Adding powers to fruits...")
+
+    strengths = ["Strong", "Weak", "Average"]
+    fruits = Fruit.query.all()
+    powers = Power.query.all()
+
+    for fruit in fruits:
+        for _ in range(choice([1, 2, 3])):
+            power = choice(powers)
+            strength = choice(strengths)
+            fruit_power = FruitPower(fruit_id=fruit.id, power_id=power.id, strength=strength, created_at=datetime.utcnow(), updated_at=datetime.utcnow())
+            db.session.add(fruit_power)
+
+    db.session.commit()
+
+    print("🍏 Done seeding!")
