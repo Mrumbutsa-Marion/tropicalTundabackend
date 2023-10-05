@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_migrate import Migrate
-from models import db, User, Order, Donation, Payment, Fruit
+from .models import db, User, Order, Donation, Payment, Fruit
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Email
@@ -10,6 +10,7 @@ from flask_cors import CORS
 import secrets
 
 def create_app():
+
     app = Flask(__name__)
 
     app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://marion:rq2bTOIw6EUXc0P6kMOYm4lmTQVMsCMy@dpg-ckf3n00l3its738m4ov0-a.ohio-postgres.render.com/tunda_app'
