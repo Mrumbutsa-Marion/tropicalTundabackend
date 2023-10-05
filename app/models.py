@@ -41,6 +41,12 @@ class Product(db.Model):
     description = db.Column(db.String)
     price = db.Column(db.Float)
     quantity = db.Column(db.Integer)
+    def __init__(self, name, description, price, quantity, image):
+        self.name = name
+        self.description = description
+        self.price = price
+        self.quantity = quantity
+        self.image = image 
 
 class CartItem(db.Model):
     id = db.Column(db.Integer, primary_key=True)

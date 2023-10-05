@@ -1,7 +1,7 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Blueprint
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_migrate import Migrate
-from models import db, User
+from models import db, User, Product
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Email
@@ -52,7 +52,6 @@ def signup():
 
     return jsonify({'message': 'User created successfully'})
 
-# Create the /login route to handle user login
 @app.route('/login', methods=['POST'])
 def login():
     data = request.json
@@ -66,6 +65,26 @@ def login():
         return jsonify({'message': 'Invalid credentials'}), 401
 
     return jsonify({'message': 'Login successful'})
+
+products_bp = Blueprint('products', __name__)
+
+@products_bp.route('/products', methods=['GET'])
+def get_products():
+    products = Product.query.all()
+    product_list = []
+
+    for product in products:
+        product_list.append({
+            'name': product.name,
+            'description': product.description,
+            'price': product.price,
+            'quantity': product.quantity,
+            'image': product.image
+        })
+
+    return jsonify(product_list)
+
+app.register_blueprint(products_bp)
 
 if __name__ == '__main__':
     app.run()
