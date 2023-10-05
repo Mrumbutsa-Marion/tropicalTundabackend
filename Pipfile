@@ -6,7 +6,7 @@ name = "pypi"
 [packages]
 alembic = "==1.12.0"
 blinker = "==1.6.2"
-click = "==8.1.7"
+click = "*"
 flask = "==2.2.2"
 flask-migrate = "==2.7.0"
 flask-script = "==2.0.5"
@@ -20,6 +20,7 @@ sqlalchemy = "==2.0.21"
 typing-extensions = "==4.8.0"
 werkzeug = "==3.0.0"
 jsonify = "*"
+dnspython = "==2.2.1"
 
 [dev-packages]
 
