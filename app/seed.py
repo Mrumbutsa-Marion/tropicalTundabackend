@@ -1,5 +1,5 @@
 # Importing necessary modules
-from models import db, Fruit, Power, FruitPower
+from models import db, Fruit, Power, FruitPower, Donation
 from random import choice
 from app import create_app
 from datetime import datetime
@@ -61,6 +61,18 @@ with app.app_context():
             strength = choice(strengths)
             fruit_power = FruitPower(fruit_id=fruit.id, power_id=power.id, strength=strength, created_at=datetime.utcnow(), updated_at=datetime.utcnow())
             db.session.add(fruit_power)
+
+    # Step 5: Seeding donations
+    print("💰 Seeding donations...")
+    donations_data = [
+        {"donor_name": "John Doe", "amount": 100.00, "created_at": datetime.utcnow(), "updated_at": datetime.utcnow()},
+        {"donor_name": "Jane Doe", "amount": 50.00, "created_at": datetime.utcnow(), "updated_at": datetime.utcnow()},
+        # Add more donation data as needed
+    ]
+
+    for data in donations_data:
+        donation = Donation(**data)
+        db.session.add(donation)
 
     db.session.commit()
 
