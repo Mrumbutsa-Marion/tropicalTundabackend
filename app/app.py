@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, Blueprint
+from flask import Flask, request, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_migrate import Migrate
 from models import db, User, Order, Donation, Payment, Fruit
@@ -12,32 +12,33 @@ import secrets
 def create_app():
     app = Flask(__name__)
 
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tundas.db'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://marion:rq2bTOIw6EUXc0P6kMOYm4lmTQVMsCMy@dpg-ckf3n00l3its738m4ov0-a.ohio-postgres.render.com/tunda_app'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 
     db.init_app(app)
+    migrate = Migrate(app, db)
+
+    CORS(app)
+
+    secret_key = secrets.token_hex(16)
+    app.config['SECRET_KEY'] = secret_key
 
     return app
 
 app = create_app()
-migrate = Migrate(app, db)
-
-CORS(app)
-
-
-secret_key = secrets.token_hex(16)
-app.config['SECRET_KEY'] = secret_key
 
 # Define a WTForms class for user signup
 class SignupForm(FlaskForm):
     user_name = StringField('user_name', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired()])
+    submit = SubmitField('Sign Up')
 
 # Define a WTForms class for user login
 class LoginForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired()])
+    submit = SubmitField('Log In')
 
 @app.route('/')
 def home():
@@ -78,7 +79,6 @@ def login():
 
     return jsonify({'message': 'Login successful'})
 
-
 @app.route('/orders', methods=['GET'])
 def get_all_orders():
     orders = Order.query.all()
@@ -109,7 +109,6 @@ def get_specific_order(order_id):
 
 # Retrieve all donations and payments (your existing routes)
 
-# Retrieve all fruits
 @app.route('/fruits', methods=['GET'])
 def get_fruits():
     fruits = Fruit.query.all()
@@ -142,6 +141,5 @@ def get_fruit(fruit_id):
 
     return jsonify(fruit_data)
 
-
 if __name__ == '__main__':
-     app.run(port=5555, debug=True)
+    app.run(port=5555, debug=True)
