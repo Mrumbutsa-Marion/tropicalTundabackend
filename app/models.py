@@ -1,5 +1,8 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import validates
+from sqlalchemy import DateTime, ForeignKey
+from datetime import datetime
+
 
 db = SQLAlchemy()
 
@@ -23,39 +26,55 @@ class Order(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     order_id = db.Column(db.Integer)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    items = db.Column(db.String)
+    items = db.Column(db.String, nullable=False)
     total_amount = db.Column(db.Float)
-    delivery_address = db.Column(db.String)
+    delivery_address = db.Column(db.String, nullable=False)
 
 class Donation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     donation_id = db.Column(db.Integer)
+    donor_name = db.Column(db.String, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     amount = db.Column(db.Float)
     timestamp = db.Column(db.DateTime)
     message = db.Column(db.String)
 
-class Product(db.Model):
+class Fruit(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String)
-    description = db.Column(db.String)
+    image_url = db.Column(db.String, nullable=False)
+    name = db.Column(db.String, nullable=False)
+    super_name = db.Column(db.String, nullable=False)
+    description = db.Column(db.String, nullable=False)
     price = db.Column(db.Float)
-    quantity = db.Column(db.Integer)
-    def __init__(self, name, description, price, quantity, image):
-        self.name = name
-        self.description = description
-        self.price = price
-        self.quantity = quantity
-        self.image = image 
+    quantity = db.Column(db.Integer, nullable=True)
+    created_at = db.Column(db.DateTime, nullable=False, default=lambda: datetime.utcnow())
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+class Power(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, nullable=False)
+    description = db.Column(db.String, nullable=False)
+    created_at = db.Column(db.DateTime, nullable=False, default=lambda: datetime.utcnow())
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+class FruitPower(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    fruit_id = db.Column(db.Integer, ForeignKey('fruit.id'), nullable=False)
+    power_id = db.Column(db.Integer, ForeignKey('power.id'), nullable=False)
+    strength = db.Column(db.String)
+    created_at = db.Column(db.DateTime, nullable=False, default=lambda: datetime.utcnow())
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+
+class Payment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    payment_method = db.Column(db.String)
+    amount = db.Column(db.Float)
+    created_at = db.Column(db.DateTime, nullable=False, default=lambda: datetime.utcnow())
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
 class CartItem(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=False)
-    quantity = db.Column(db.Integer)
-
-class Payment(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    amount = db.Column(db.Integer)
-    date = db.Column(db.DateTime)
+    fruit_id = db.Column(db.Integer, db.ForeignKey('fruit.id'), nullable=False)
+    quantity = db.Column(db.Integer)   
